@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulação de Crédito — Mock Caixa (QA Local)</title>
+  <style>
+    :root {
+      --caixa-azul: #005ca9;
+      --caixa-azul-escuro: #004a87;
+      --caixa-laranja: #f39200;
+      --aprovado: #137333;
+      --aprovado-bg: #e6f4ea;
+      --negado: #c5221f;
+      --negado-bg: #fce8e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #eef4fb 0%, #f7f9fc 40%, #ffffff 100%);
+      color: #1a1a1a;
+    }
+
+    .topbar {
+      background: var(--caixa-azul);
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .topbar-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--caixa-laranja);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .topbar span { font-size: 0.95rem; opacity: 0.95; }
+
+    .container {
+      max-width: 520px;
+      margin: 32px auto;
+      padding: 0 16px 40px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(0, 92, 169, 0.12);
+      border: 1px solid #dbe7f3;
+    }
+
+    h1 {
+      color: var(--caixa-azul);
+      font-size: 1.5rem;
+      margin: 0 0 8px;
+    }
+
+    .subtitle {
+      color: #5f6368;
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    .badge-mock {
+      display: inline-block;
+      background: #fff3e0;
+      color: #e65100;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      border: 1px solid #ffcc80;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      margin-top: 8px;
+      border: 2px solid #cfd8dc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--caixa-azul);
+      box-shadow: 0 0 0 3px rgba(0, 92, 169, 0.15);
+    }
+
+    input.preenchido {
+      border-color: var(--caixa-azul);
+      background: #f3f9ff;
+    }
+
+    button {
+      margin-top: 28px;
+      width: 100%;
+      padding: 14px;
+      background: var(--caixa-azul);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover { background: var(--caixa-azul-escuro); }
+    button:active { transform: scale(0.98); }
+
+    #resultado-simulacao {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 8px;
+      min-height: 52px;
+      font-weight: 600;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.35s, transform 0.35s;
+    }
+
+    #resultado-simulacao.visivel {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .aprovado {
+      background: var(--aprovado-bg);
+      color: var(--aprovado);
+      border: 2px solid var(--aprovado);
+    }
+
+    .negado {
+      background: var(--negado-bg);
+      color: var(--negado);
+      border: 2px solid var(--negado);
+    }
+
+    .rodape {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: #80868b;
+    }
+
+    .regra {
+      margin-top: 20px;
+      padding: 12px 14px;
+      background: #f8f9fa;
+      border-left: 4px solid var(--caixa-laranja);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-logo">CX</div>
+    <strong>Caixa Econômica Federal</strong>
+    <span>— Simulação de Crédito (Mock QA)</span>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <span class="badge-mock">Ambiente fake para testes Robot</span>
+      <h1>Simulação de Crédito Imobiliário</h1>
+      <p class="subtitle">
+        Formulário local para validar seletores Selenium e massa de dados do
+        <code>test_data.json</code> sem acessar o sistema real da Caixa.
+      </p>
+
+      <form id="form-simulacao" onsubmit="return false;">
+        <label for="cpf">CPF do titular</label>
+        <input
+          id="cpf"
+          name="cpf"
+          type="text"
+          maxlength="14"
+          placeholder="000.000.000-00"
+          autocomplete="off"
+          aria-label="CPF do titular"
+        >
+
+        <label for="renda-mensal">Renda mensal bruta (R$)</label>
+        <input
+          id="renda-mensal"
+          name="renda-mensal"
+          type="text"
+          placeholder="Ex.: 5.000,00"
+          autocomplete="off"
+          aria-label="Renda mensal"
+        >
+
+        <button type="button" data-testid="btn-simular" onclick="simularCredito()">
+          Simular crédito
+        </button>
+      </form>
+
+      <div
+        id="resultado-simulacao"
+        data-testid="resultado-simulacao"
+        role="alert"
+        aria-live="polite"
+      ></div>
+
+      <div class="regra">
+        <strong>Regras do mock:</strong> CPF com dígitos verificadores válidos;
+        renda mínima de R$ 3.000,00 para elegibilidade.
+      </div>
+    </div>
+
+    <p class="rodape">
+      Arquivo: <code>data/mock/simulacao_credito.html</code> — uso exclusivo em QA local
+    </p>
+  </main>
+
+  <script>
+    const RENDA_MINIMA = 3000;
+
+    document.getElementById("cpf").addEventListener("input", marcarPreenchido);
+    document.getElementById("renda-mensal").addEventListener("input", marcarPreenchido);
+
+    function marcarPreenchido(evento) {
+      evento.target.classList.toggle("preenchido", evento.target.value.trim().length > 0);
+    }
+
+    function limparCpf(cpf) {
+      return cpf.replace(/\D/g, "");
+    }
+
+    function cpfValido(cpf) {
+      if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+      let soma = 0;
+      for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i), 10) * (10 - i);
+      let resto = (soma * 10) % 11;
+      if (resto === 10) resto = 0;
+      if (resto !== parseInt(cpf.charAt(9), 10)) return false;
+
+      soma = 0;
+      for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i), 10) * (11 - i);
+      resto = (soma * 10) % 11;
+      if (resto === 10) resto = 0;
+      return resto === parseInt(cpf.charAt(10), 10);
+    }
+
+    function parseRenda(valor) {
+      const normalizado = valor.trim();
+      if (normalizado.includes(",")) {
+        return parseFloat(normalizado.replace(/\./g, "").replace(",", "."));
+      }
+      return parseFloat(normalizado);
+    }
+
+    function exibirResultado(texto, tipo) {
+      const resultado = document.getElementById("resultado-simulacao");
+      resultado.textContent = texto;
+      resultado.className = tipo + " visivel";
+    }
+
+    function simularCredito() {
+      const cpf = limparCpf(document.getElementById("cpf").value);
+      const renda = parseRenda(document.getElementById("renda-mensal").value);
+
+      if (!cpfValido(cpf)) {
+        exibirResultado("CPF inválido ou não encontrado.", "negado");
+        return;
+      }
+
+      if (isNaN(renda) || renda < RENDA_MINIMA) {
+        exibirResultado("Renda insuficiente para o produto selecionado.", "negado");
+        return;
+      }
+
+      exibirResultado("Parabéns! Você está elegível para simulação de crédito.", "aprovado");
+    }
+  </script>
+</body>
+</html>

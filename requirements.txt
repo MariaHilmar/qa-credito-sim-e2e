@@ -1,0 +1,4 @@
+robotframework>=7.0
+robotframework-seleniumlibrary>=6.0
+robotframework-requests>=0.9
+PyYAML>=6.0

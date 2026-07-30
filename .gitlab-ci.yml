@@ -1,0 +1,72 @@
+stages:
+  - test
+
+default:
+  image: python:3.12-slim
+  cache:
+    key:
+      files:
+        - requirements.txt
+    paths:
+      - .cache/pip
+  before_script:
+    - pip install --cache-dir .cache/pip -r requirements.txt
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  TEST_ENV: ci
+  BASE_URL: "https://the-internet.herokuapp.com"
+  BROWSER: chrome
+  HEADLESS: "true"
+  TEST_TIMEOUT: "15"
+  FF_NETWORK_PER_BUILD: "true"
+
+.robot-base:
+  stage: test
+  script:
+    - mkdir -p results
+    - >
+      robot
+      --pythonpath libraries
+      --pythonpath variables
+      --outputdir results
+      --xunit results/junit.xml
+      ${ROBOT_TAGS}
+      ${ROBOT_SUITE}
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - results/
+    reports:
+      junit: results/junit.xml
+
+test:smoke:
+  extends: .robot-base
+  variables:
+    ROBOT_SUITE: tests/
+    ROBOT_TAGS: "--include smoke --exclude web"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+test:web:
+  extends: .robot-base
+  services:
+    - name: selenium/standalone-chrome:4.27.0-20241204
+      alias: selenium
+  variables:
+    ROBOT_SUITE: tests/
+    ROBOT_TAGS: "--include web"
+    SELENIUM_REMOTE_URL: "http://selenium:4444/wd/hub"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+test:web:manual:
+  extends: test:web
+  rules:
+    - when: manual
+      allow_failure: true

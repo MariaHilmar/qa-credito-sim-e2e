@@ -1,0 +1,12 @@
+# Configuração do Robot Framework (RF 6+)
+# Uso: robot --config robot.yaml tests/
+
+paths:
+  - tests
+
+pythonpath:
+  - libraries
+  - variables
+
+outputdir: results
+loglevel: INFO

@@ -1,0 +1,64 @@
+{
+  "usuarios": {
+    "admin": {
+      "email": "admin@exemplo.com",
+      "senha": "senha-admin"
+    },
+    "comum": {
+      "email": "usuario@exemplo.com",
+      "senha": "senha-usuario"
+    }
+  },
+  "the_internet": {
+    "valido": {
+      "usuario": "tomsmith",
+      "senha": "SuperSecretPassword!"
+    },
+    "invalido": {
+      "usuario": "usuario_invalido",
+      "senha": "senha_invalida"
+    }
+  },
+  "simulacao_credito": [
+    {
+      "id": "CT-FIN-001",
+      "requisito": "REQ-FIN-001",
+      "descricao": "Cliente com renda acima do mínimo deve ser elegível",
+      "cpf": "52998224725",
+      "renda": "8500.00",
+      "resultado_esperado": "aprovado"
+    },
+    {
+      "id": "CT-FIN-002",
+      "requisito": "REQ-FIN-001",
+      "descricao": "Cliente com renda abaixo do mínimo deve ser negado",
+      "cpf": "52998224725",
+      "renda": "2500.00",
+      "resultado_esperado": "negado_renda"
+    },
+    {
+      "id": "CT-FIN-003",
+      "requisito": "REQ-FIN-002",
+      "descricao": "CPF inválido deve impedir a simulação",
+      "cpf": "12345678900",
+      "renda": "6000.00",
+      "resultado_esperado": "negado_cpf"
+    },
+    {
+      "id": "CT-FIN-004",
+      "requisito": "REQ-FIN-001",
+      "descricao": "Cliente com renda exatamente no limite deve ser elegível",
+      "cpf": "11144477735",
+      "renda": "3000.00",
+      "resultado_esperado": "aprovado"
+    },
+    {
+      "id": "CT-FIN-005",
+      "requisito": "REQ-FIN-003",
+      "descricao": "Cliente com renda um centavo abaixo do limite deve ser negado",
+      "cpf": "11144477735",
+      "renda": "2999.99",
+      "resultado_esperado": "negado_renda"
+    }
+  ]
+}

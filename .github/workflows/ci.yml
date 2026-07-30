@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run smoke tests
+        run: |
+          mkdir -p results
+          robot \
+            --pythonpath libraries \
+            --pythonpath variables \
+            --outputdir results \
+            --xunit results/junit.xml \
+            --include smoke \
+            --exclude web \
+            tests/
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-reports
+          path: results/
+          retention-days: 7
+
+  e2e:
+    name: E2E (Selenium)
+    runs-on: ubuntu-latest
+
+    services:
+      selenium:
+        image: selenium/standalone-chrome:4.27.0-20241204
+        ports:
+          - 4444:4444
+        options: >-
+          --shm-size=2g
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run E2E tests
+        env:
+          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
+          HEADLESS: "true"
+          TEST_TIMEOUT: "15"
+          BROWSER: chrome
+        run: |
+          mkdir -p results
+          robot \
+            --pythonpath libraries \
+            --pythonpath variables \
+            --outputdir results \
+            --xunit results/junit.xml \
+            --include web \
+            tests/
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-reports
+          path: results/
+          retention-days: 7
