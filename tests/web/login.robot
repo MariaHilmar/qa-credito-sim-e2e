@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Testes web com Selenium — exemplo de login.
+Documentation    Testes web com Selenium - exemplo de login.
 Resource         ../../resources/pages/login_page.robot
 Variables        ../../variables/common_variables.py
 Suite Setup      Abrir Navegador

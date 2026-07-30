@@ -11,3 +11,5 @@ BROWSER = os.getenv("BROWSER", "chrome")
 HEADLESS = os.getenv("HEADLESS", "true").lower() in ("1", "true", "yes")
 SELENIUM_REMOTE_URL = os.getenv("SELENIUM_REMOTE_URL", "")
 SELENIUM_SPEED = os.getenv("SELENIUM_SPEED", "")
+# Ex.: /usr/bin/chromium no CI Debian/GitLab
+CHROME_BINARY = os.getenv("CHROME_BINARY", "")

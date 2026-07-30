@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation    Page Object — Simulação de Crédito (Financiamento Caixa).
+Documentation    Page Object - Simulação de Crédito (Financiamento Caixa).
 Resource         ../selenium/browser.robot
 Library          Collections
 Variables        ../../variables/financiamento_variables.py

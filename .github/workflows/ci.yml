@@ -50,15 +50,6 @@ jobs:
   e2e:
     name: E2E (Selenium)
     runs-on: ubuntu-latest
-
-    services:
-      selenium:
-        image: selenium/standalone-chrome:4.27.0-20241204
-        ports:
-          - 4444:4444
-        options: >-
-          --shm-size=2g
-
     steps:
       - uses: actions/checkout@v4
 
@@ -69,12 +60,29 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # Chrome no runner (sem Grid): o mock HTTP em localhost fica acessível ao browser.
+      # file:// + Selenium Grid falha porque o container do Grid não vê o FS do job.
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Start mock HTTP server
+        run: |
+          python -m http.server 8765 --directory data --bind 127.0.0.1 &
+          for i in $(seq 1 20); do
+            curl -sf "http://127.0.0.1:8765/mock/simulacao_credito.html" >/dev/null && exit 0
+            sleep 0.5
+          done
+          echo "Mock HTTP server failed to start" >&2
+          exit 1
+
       - name: Run E2E tests
         env:
-          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
           HEADLESS: "true"
           TEST_TIMEOUT: "15"
           BROWSER: chrome
+          BASE_URL: "https://the-internet.herokuapp.com"
+          SIMULACAO_CREDITO_URL: "http://127.0.0.1:8765/mock/simulacao_credito.html"
+          # Sem SELENIUM_REMOTE_URL: headlesschrome no runner acessa o mock local.
         run: |
           mkdir -p results
           robot \

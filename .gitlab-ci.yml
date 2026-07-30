@@ -9,8 +9,6 @@ default:
         - requirements.txt
     paths:
       - .cache/pip
-  before_script:
-    - pip install --cache-dir .cache/pip -r requirements.txt
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -19,20 +17,12 @@ variables:
   BROWSER: chrome
   HEADLESS: "true"
   TEST_TIMEOUT: "15"
-  FF_NETWORK_PER_BUILD: "true"
+  SIMULACAO_CREDITO_URL: "http://127.0.0.1:8765/mock/simulacao_credito.html"
 
 .robot-base:
   stage: test
-  script:
-    - mkdir -p results
-    - >
-      robot
-      --pythonpath libraries
-      --pythonpath variables
-      --outputdir results
-      --xunit results/junit.xml
-      ${ROBOT_TAGS}
-      ${ROBOT_SUITE}
+  before_script:
+    - pip install --cache-dir .cache/pip -r requirements.txt
   artifacts:
     when: always
     expire_in: 7 days
@@ -43,23 +33,48 @@ variables:
 
 test:smoke:
   extends: .robot-base
-  variables:
-    ROBOT_SUITE: tests/
-    ROBOT_TAGS: "--include smoke --exclude web"
+  script:
+    - mkdir -p results
+    - >
+      robot
+      --pythonpath libraries
+      --pythonpath variables
+      --outputdir results
+      --xunit results/junit.xml
+      --include smoke
+      --exclude web
+      tests/
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
+# Chrome/Chromium no job (sem Grid): mock HTTP em localhost acessível ao browser.
 test:web:
   extends: .robot-base
-  services:
-    - name: selenium/standalone-chrome:4.27.0-20241204
-      alias: selenium
+  image: python:3.12
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq chromium chromium-driver curl
+    - pip install --cache-dir .cache/pip -r requirements.txt
+    - python -m http.server 8765 --directory data --bind 127.0.0.1 &
+    - |
+      for i in $(seq 1 20); do
+        curl -sf "http://127.0.0.1:8765/mock/simulacao_credito.html" >/dev/null && break
+        sleep 0.5
+      done
   variables:
-    ROBOT_SUITE: tests/
-    ROBOT_TAGS: "--include web"
-    SELENIUM_REMOTE_URL: "http://selenium:4444/wd/hub"
+    BROWSER: chrome
+    CHROME_BINARY: /usr/bin/chromium
+  script:
+    - mkdir -p results
+    - >
+      robot
+      --pythonpath libraries
+      --pythonpath variables
+      --outputdir results
+      --xunit results/junit.xml
+      --include web
+      tests/
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

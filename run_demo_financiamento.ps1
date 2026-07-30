@@ -1,4 +1,4 @@
-# Demonstração visual — Simulação de Crédito (mock Caixa)
+# Demonstração visual - Simulação de Crédito (mock Caixa)
 # Abre o Chrome visível, digita devagar e percorre todos os cenários do JSON.
 
 $env:HEADLESS = "false"
