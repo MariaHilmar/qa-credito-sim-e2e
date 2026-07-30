@@ -9,7 +9,7 @@ Test Teardown    Capturar Screenshot Em Caso De Falha
 *** Test Cases ***
 Login Com Credenciais Validas
     [Documentation]    Valida login bem-sucedido na aplicação de demonstração.
-    [Tags]    web    smoke
+    [Tags]    demo    externo
     Abrir Pagina De Login
     Realizar Login    tomsmith    SuperSecretPassword!
     Location Should Contain    /secure
@@ -17,7 +17,7 @@ Login Com Credenciais Validas
 
 Login Com Credenciais Invalidas
     [Documentation]    Valida mensagem de erro para credenciais incorretas.
-    [Tags]    web
+    [Tags]    demo    externo
     Abrir Pagina De Login
     Realizar Login    usuario_invalido    senha_invalida
     Mensagem Flash Deve Conter    Your username is invalid!

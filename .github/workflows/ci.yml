@@ -90,8 +90,8 @@ jobs:
             --pythonpath variables \
             --outputdir results \
             --xunit results/junit.xml \
-            --include web \
-            tests/
+            --include financiamento \
+            tests/financiamento/
 
       - name: Upload reports
         if: always()

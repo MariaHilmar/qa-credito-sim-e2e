@@ -89,6 +89,9 @@ copy .env.local.example .env.local
 # Linux / macOS
 ./scripts/run_tests.sh smoke tests/exemplo/
 ./scripts/run_tests.sh financiamento tests/financiamento/
+
+# Demo externo (the-internet.herokuapp.com - opcional, não roda no CI)
+./scripts/run_tests.sh demo tests/web/
 ```
 
 Relatórios Robot: `results/report.html` e `results/log.html`.
@@ -126,7 +129,7 @@ $env:SIMULACAO_CREDITO_URL = "http://127.0.0.1:8765/mock/simulacao_credito.html"
 | Job | Descrição |
 |-----|-----------|
 | `smoke` | Testes rápidos sem browser (tag `smoke`) |
-| `e2e` | Selenium headless + mock HTTP (tag `web`, inclui `financiamento`) |
+| `e2e` | Selenium headless + mock HTTP (tag `financiamento`, 5 CTs) |
 
 Artifacts: `log.html`, `report.html`, JUnit (`results/junit.xml`).
 
