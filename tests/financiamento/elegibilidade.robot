@@ -35,6 +35,21 @@ CT-FIN-005 Renda Um Centavo Abaixo Do Limite Deve Ser Negado
     [Tags]    web    financiamento    simulacao_credito    REQ-FIN-003
     Executar Cenario De Simulacao    CT-FIN-005
 
+CT-FIN-006 CPF Vazio Deve Pedir Preenchimento
+    [Documentation]    CPF em branco deve pedir preenchimento (REQ-FIN-004).
+    [Tags]    web    financiamento    simulacao_credito    REQ-FIN-004
+    Executar Cenario De Simulacao    CT-FIN-006
+
+CT-FIN-007 Renda Vazia Deve Pedir Preenchimento
+    [Documentation]    Renda em branco deve pedir preenchimento (REQ-FIN-004).
+    [Tags]    web    financiamento    simulacao_credito    REQ-FIN-004
+    Executar Cenario De Simulacao    CT-FIN-007
+
+CT-FIN-008 Renda No Formato Brasileiro No Limite Deve Ser Elegivel
+    [Documentation]    Renda 3.000,00 (formato BR) no limite deve ser elegível (REQ-FIN-001).
+    [Tags]    web    financiamento    simulacao_credito    REQ-FIN-001
+    Executar Cenario De Simulacao    CT-FIN-008
+
 *** Keywords ***
 Obter Caso Por Id
     [Arguments]    ${id}

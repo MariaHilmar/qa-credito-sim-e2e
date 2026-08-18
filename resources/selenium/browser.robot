@@ -5,8 +5,8 @@ Variables        ../../variables/common_variables.py
 
 *** Keywords ***
 Abrir Navegador
-    [Documentation]    Abre o browser local (headless ou não) ou conecta ao Grid remoto no CI.
-    [Arguments]    ${url}=${BASE_URL}
+    [Documentation]    Abre o browser local (headless ou não) ou conecta ao Grid remoto.
+    [Arguments]    ${url}=about:blank
     ${remote_url}=    Get Variable Value    ${SELENIUM_REMOTE_URL}    ${EMPTY}
     IF    """${remote_url}""" != """${EMPTY}"""
         Open Browser    ${url}    ${BROWSER}    remote_url=${remote_url}
@@ -39,11 +39,6 @@ Montar Opcoes Chrome Headless
 Fechar Navegador
     [Documentation]    Encerra todas as sessões do navegador.
     Run Keyword And Ignore Error    Close All Browsers
-
-Ir Para Pagina
-    [Arguments]    ${path}=
-    ${url}=    Set Variable If    """${path}""" == """"""    ${BASE_URL}    ${BASE_URL}${path}
-    Go To    ${url}
 
 Capturar Screenshot Em Caso De Falha
     Run Keyword If Test Failed    Capture Page Screenshot    filename=results/selenium-screenshot-{index}.png
