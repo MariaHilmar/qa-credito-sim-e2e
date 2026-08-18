@@ -14,39 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  smoke:
-    name: Smoke
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run smoke tests
-        run: |
-          mkdir -p results
-          robot \
-            --pythonpath libraries \
-            --pythonpath variables \
-            --outputdir results \
-            --xunit results/junit.xml \
-            --include smoke \
-            --exclude web \
-            tests/
-
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: smoke-reports
-          path: results/
-          retention-days: 7
-
   e2e:
     name: E2E (Selenium)
     runs-on: ubuntu-latest
@@ -60,8 +27,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Chrome no runner (sem Grid): o mock HTTP em localhost fica acessível ao browser.
-      # file:// + Selenium Grid falha porque o container do Grid não vê o FS do job.
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
 
@@ -80,9 +45,7 @@ jobs:
           HEADLESS: "true"
           TEST_TIMEOUT: "15"
           BROWSER: chrome
-          BASE_URL: "https://the-internet.herokuapp.com"
           SIMULACAO_CREDITO_URL: "http://127.0.0.1:8765/mock/simulacao_credito.html"
-          # Sem SELENIUM_REMOTE_URL: headlesschrome no runner acessa o mock local.
         run: |
           mkdir -p results
           robot \

@@ -1,24 +1,4 @@
 {
-  "usuarios": {
-    "admin": {
-      "email": "admin@exemplo.com",
-      "senha": "senha-admin"
-    },
-    "comum": {
-      "email": "usuario@exemplo.com",
-      "senha": "senha-usuario"
-    }
-  },
-  "the_internet": {
-    "valido": {
-      "usuario": "tomsmith",
-      "senha": "SuperSecretPassword!"
-    },
-    "invalido": {
-      "usuario": "usuario_invalido",
-      "senha": "senha_invalida"
-    }
-  },
   "simulacao_credito": [
     {
       "id": "CT-FIN-001",
@@ -59,6 +39,30 @@
       "cpf": "11144477735",
       "renda": "2999.99",
       "resultado_esperado": "negado_renda"
+    },
+    {
+      "id": "CT-FIN-006",
+      "requisito": "REQ-FIN-004",
+      "descricao": "CPF vazio deve pedir preenchimento",
+      "cpf": "",
+      "renda": "6000.00",
+      "resultado_esperado": "campo_cpf_vazio"
+    },
+    {
+      "id": "CT-FIN-007",
+      "requisito": "REQ-FIN-004",
+      "descricao": "Renda vazia deve pedir preenchimento",
+      "cpf": "52998224725",
+      "renda": "",
+      "resultado_esperado": "campo_renda_vazio"
+    },
+    {
+      "id": "CT-FIN-008",
+      "requisito": "REQ-FIN-001",
+      "descricao": "Renda no formato brasileiro no limite deve ser elegível",
+      "cpf": "11144477735",
+      "renda": "3.000,00",
+      "resultado_esperado": "aprovado"
     }
   ]
 }

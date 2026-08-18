@@ -14,6 +14,8 @@ ${RESULTADO_ELEGIBILIDADE}    css=[data-testid="resultado-simulacao"]
 ...    aprovado=Parabéns! Você está elegível para simulação de crédito.
 ...    negado_renda=Renda insuficiente para o produto selecionado.
 ...    negado_cpf=CPF inválido ou não encontrado.
+...    campo_cpf_vazio=Informe o CPF.
+...    campo_renda_vazio=Informe a renda mensal.
 
 *** Keywords ***
 # --- Ações técnicas (Page Object) ---
@@ -29,13 +31,17 @@ Preencher CPF
     [Arguments]    ${cpf}
     Wait Until Element Is Visible    ${INPUT_CPF}
     Clear Element Text    ${INPUT_CPF}
-    Input Text    ${INPUT_CPF}    ${cpf}
+    IF    """${cpf}""" != """"""
+        Input Text    ${INPUT_CPF}    ${cpf}
+    END
 
 Preencher Renda Mensal
     [Arguments]    ${renda}
     Wait Until Element Is Visible    ${INPUT_RENDA}
     Clear Element Text    ${INPUT_RENDA}
-    Input Text    ${INPUT_RENDA}    ${renda}
+    IF    """${renda}""" != """"""
+        Input Text    ${INPUT_RENDA}    ${renda}
+    END
 
 Clicar Em Simular Credito
     Wait Until Element Is Visible    ${BOTAO_SIMULAR}

@@ -286,8 +286,21 @@
     }
 
     function simularCredito() {
-      const cpf = limparCpf(document.getElementById("cpf").value);
-      const renda = parseRenda(document.getElementById("renda-mensal").value);
+      const cpfDigitado = document.getElementById("cpf").value.trim();
+      const rendaDigitada = document.getElementById("renda-mensal").value.trim();
+
+      if (!cpfDigitado) {
+        exibirResultado("Informe o CPF.", "negado");
+        return;
+      }
+
+      if (!rendaDigitada) {
+        exibirResultado("Informe a renda mensal.", "negado");
+        return;
+      }
+
+      const cpf = limparCpf(cpfDigitado);
+      const renda = parseRenda(rendaDigitada);
 
       if (!cpfValido(cpf)) {
         exibirResultado("CPF inválido ou não encontrado.", "negado");

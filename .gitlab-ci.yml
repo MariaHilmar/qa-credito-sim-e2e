@@ -13,7 +13,6 @@ default:
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   TEST_ENV: ci
-  BASE_URL: "https://the-internet.herokuapp.com"
   BROWSER: chrome
   HEADLESS: "true"
   TEST_TIMEOUT: "15"
@@ -21,8 +20,6 @@ variables:
 
 .robot-base:
   stage: test
-  before_script:
-    - pip install --cache-dir .cache/pip -r requirements.txt
   artifacts:
     when: always
     expire_in: 7 days
@@ -31,26 +28,7 @@ variables:
     reports:
       junit: results/junit.xml
 
-test:smoke:
-  extends: .robot-base
-  script:
-    - mkdir -p results
-    - >
-      robot
-      --pythonpath libraries
-      --pythonpath variables
-      --outputdir results
-      --xunit results/junit.xml
-      --include smoke
-      --exclude web
-      tests/
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-# Chrome/Chromium no job (sem Grid): mock HTTP em localhost acessível ao browser.
-test:web:
+test:e2e:
   extends: .robot-base
   image: python:3.12
   before_script:
@@ -80,8 +58,8 @@ test:web:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
-test:web:manual:
-  extends: test:web
+test:e2e:manual:
+  extends: test:e2e
   rules:
     - when: manual
       allow_failure: true

@@ -1,1 +1,1 @@
-"""Bibliotecas Python customizadas para Robot Framework."""
+"""Pacote para pythonpath do Robot Framework."""

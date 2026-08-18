@@ -1,16 +1,16 @@
-# Requisitos - Simulação de Crédito (Mock QA)
+# Requisitos - Simulação de Crédito (mock local)
 
-> Documento canônico de requisitos e cenários BDD para a suíte
-> `tests/financiamento/elegibilidade.robot`. O mock em
-> `data/mock/simulacao_credito.html` implementa estas regras para execução
-> reproduzível sem ambiente externo.
+Documento das regras usadas pelo mock `data/mock/simulacao_credito.html` e pela suíte
+`tests/financiamento/elegibilidade.robot`.
+
+Projeto de estudo. O HTML não replica sistema de instituição financeira.
 
 ## 1. Objetivo
 
-Validar a **elegibilidade** de um cliente na simulação de crédito imobiliário
-com base em CPF (dígitos verificadores) e renda mensal bruta mínima.
+Exercitar automação web (Robot Framework + Selenium) num formulário de elegibilidade
+com CPF e renda mensal bruta.
 
-## 2. Regras de negócio
+## 2. Regras do mock
 
 | ID | Regra |
 |----|--------|
@@ -18,31 +18,36 @@ com base em CPF (dígitos verificadores) e renda mensal bruta mínima.
 | RN02 | Renda mínima de elegibilidade: **R$ 3.000,00** |
 | RN03 | Renda exatamente no limite (R$ 3.000,00) é elegível |
 | RN04 | Renda abaixo do limite (mesmo R$ 2.999,99) é negada |
+| RN05 | CPF ou renda em branco pedem preenchimento antes das demais validações |
+| RN06 | Renda aceita formato `3000.00` ou `3.000,00` |
 
 ## 3. Requisitos rastreados
 
 | Requisito | Descrição | Casos |
 |-----------|-----------|-------|
-| REQ-FIN-001 | Elegibilidade por renda mínima | CT-FIN-001, CT-FIN-002, CT-FIN-004 |
+| REQ-FIN-001 | Elegibilidade por renda mínima | CT-FIN-001, CT-FIN-002, CT-FIN-004, CT-FIN-008 |
 | REQ-FIN-002 | Validação de CPF | CT-FIN-003 |
 | REQ-FIN-003 | Limite inferior estrito (borda) | CT-FIN-005 |
+| REQ-FIN-004 | Campos obrigatórios | CT-FIN-006, CT-FIN-007 |
 
-## 4. Mensagens esperadas (contrato do mock)
+## 4. Mensagens esperadas
 
 | Resultado | Mensagem |
 |-----------|----------|
 | `aprovado` | Parabéns! Você está elegível para simulação de crédito. |
 | `negado_renda` | Renda insuficiente para o produto selecionado. |
 | `negado_cpf` | CPF inválido ou não encontrado. |
+| `campo_cpf_vazio` | Informe o CPF. |
+| `campo_renda_vazio` | Informe a renda mensal. |
 
-## 5. Cenários BDD (Gherkin)
+## 5. Cenários (Gherkin)
 
 ```gherkin
 # language: pt
 Funcionalidade: Elegibilidade na simulação de crédito
-  Como analista de crédito
-  Quero validar CPF e renda na simulação
-  Para decidir se o cliente está elegível ao produto
+  Como usuário do simulador
+  Quero validar CPF e renda no mock
+  Para ver se a elegibilidade está correta
 
   Contexto:
     Dado que estou na página de simulação de crédito
@@ -76,24 +81,40 @@ Funcionalidade: Elegibilidade na simulação de crédito
     Quando preencho CPF válido "11144477735" e renda "2999.99"
     E solicito a simulação de crédito
     Então o resultado da simulação deve ser "negado_renda"
+
+  @REQ-FIN-004 @CT-FIN-006
+  Cenário: CPF vazio deve pedir preenchimento
+    Quando deixo o CPF vazio e preencho renda "6000.00"
+    E solicito a simulação de crédito
+    Então o resultado da simulação deve ser "campo_cpf_vazio"
+
+  @REQ-FIN-004 @CT-FIN-007
+  Cenário: Renda vazia deve pedir preenchimento
+    Quando preencho CPF válido "52998224725" e deixo a renda vazia
+    E solicito a simulação de crédito
+    Então o resultado da simulação deve ser "campo_renda_vazio"
+
+  @REQ-FIN-001 @CT-FIN-008
+  Cenário: Renda no formato brasileiro no limite deve ser elegível
+    Quando preencho CPF válido "11144477735" e renda "3.000,00"
+    E solicito a simulação de crédito
+    Então o resultado da simulação deve ser "aprovado"
 ```
 
-## 6. Rastreabilidade
+## 6. Arquivos relacionados
 
 | Artefato | Caminho |
 |----------|---------|
-| Massa de dados | `data/test_data.json` (`simulacao_credito`) |
-| Keywords BDD | `resources/pages/financiamento_page.robot` |
+| Massa de dados | `data/test_data.json` |
+| Keywords | `resources/pages/financiamento_page.robot` |
 | Suíte Robot | `tests/financiamento/elegibilidade.robot` |
 | Mock HTML | `data/mock/simulacao_credito.html` |
 
-## 7. Ambiente de execução
+## 7. Como apontar o mock
 
-| Ambiente | URL do mock |
-|----------|-------------|
-| Local (padrão) | `file://.../data/mock/simulacao_credito.html` (auto) |
-| Local / CI com HTTP | `http://127.0.0.1:8765/mock/simulacao_credito.html` |
-| SIT/UAT | Definir `SIMULACAO_CREDITO_URL` no `.env.local` |
+| Situação | URL |
+|----------|-----|
+| Padrão local | `file://.../data/mock/simulacao_credito.html` (automático) |
+| Servidor HTTP | `http://127.0.0.1:8765/mock/simulacao_credito.html` (`SIMULACAO_CREDITO_URL`) |
 
-No CI, o mock é servido via `python -m http.server` porque `file://` não é
-confiável com browser remoto / Grid.
+No CI o mock sobe com `python -m http.server` porque `file://` falha com browser remoto.
