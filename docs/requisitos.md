@@ -1,7 +1,7 @@
 # Requisitos - Simulação de Crédito (mock local)
 
-Documento das regras usadas pelo mock `data/mock/simulacao_credito.html` e pela suíte
-`tests/financiamento/elegibilidade.robot`.
+Documento das regras usadas pelo sistema `app/simulacao_credito.html` e pela suíte
+`e2e/tests/financiamento/elegibilidade.robot`.
 
 Projeto de estudo. O HTML não replica sistema de instituição financeira.
 
@@ -105,16 +105,17 @@ Funcionalidade: Elegibilidade na simulação de crédito
 
 | Artefato | Caminho |
 |----------|---------|
-| Massa de dados | `data/test_data.json` |
-| Keywords | `resources/pages/financiamento_page.robot` |
-| Suíte Robot | `tests/financiamento/elegibilidade.robot` |
-| Mock HTML | `data/mock/simulacao_credito.html` |
+| Sistema (SUT) | `app/simulacao_credito.html` |
+| Massa de dados | `e2e/data/test_data.json` |
+| Page Object | `e2e/resources/pages/financiamento_page.robot` |
+| Keywords BDD | `e2e/resources/keywords/simulacao_credito_keywords.robot` |
+| Suíte Robot | `e2e/tests/financiamento/elegibilidade.robot` |
 
 ## 7. Como apontar o mock
 
 | Situação | URL |
 |----------|-----|
-| Padrão local | `file://.../data/mock/simulacao_credito.html` (automático) |
-| Servidor HTTP | `http://127.0.0.1:8765/mock/simulacao_credito.html` (`SIMULACAO_CREDITO_URL`) |
+| Padrão local | `file://.../app/simulacao_credito.html` (automático) |
+| Servidor HTTP | `http://127.0.0.1:8765/simulacao_credito.html` (`SIMULACAO_CREDITO_URL`) |
 
-No CI o mock sobe com `python -m http.server` porque `file://` falha com browser remoto.
+No CI o sistema sobe com `python -m http.server --directory app` porque `file://` falha com browser remoto. A automação não lê o HTML do disco: só a URL.

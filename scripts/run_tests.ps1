@@ -1,10 +1,13 @@
-# Executa todos os testes do projeto
+# Executa a suíte E2E (Robot) contra o sistema em app/
 param(
     [string[]]$Tags,
-    [string]$Suite = "tests/"
+    [string]$Suite = "e2e/tests/"
 )
 
-$envFile = Join-Path $PSScriptRoot ".env.local"
+$root = Split-Path -Parent $PSScriptRoot
+Set-Location $root
+
+$envFile = Join-Path $root ".env.local"
 if (Test-Path $envFile) {
     Get-Content $envFile | ForEach-Object {
         if ($_ -match '^\s*([^#=]+?)=(.*)$') {
@@ -13,13 +16,12 @@ if (Test-Path $envFile) {
     }
 }
 
-New-Item -ItemType Directory -Force -Path (Join-Path $PSScriptRoot "results") | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $root "results") | Out-Null
 
 $robotArgs = @(
-    "--pythonpath", "libraries",
-    "--pythonpath", "variables",
+    "--pythonpath", "e2e/variables",
     "--outputdir", "results",
-    "--xunit", "results/junit.xml"
+    "--xunit", "junit.xml"
 )
 
 if ($Tags) {
@@ -29,4 +31,4 @@ if ($Tags) {
 
 $robotArgs += $Suite
 
-& "$PSScriptRoot\.venv\Scripts\robot.exe" @robotArgs
+& "$root\.venv\Scripts\robot.exe" @robotArgs

@@ -3,11 +3,11 @@
 import os
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-MOCK_SIMULACAO = ROOT / "data" / "mock" / "simulacao_credito.html"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+APP_PAGE = REPO_ROOT / "app" / "simulacao_credito.html"
 
 SIMULACAO_CREDITO_URL = os.getenv(
     "SIMULACAO_CREDITO_URL",
-    MOCK_SIMULACAO.resolve().as_uri(),
+    APP_PAGE.resolve().as_uri(),
 )
 RENDA_MINIMA_ELEGIBILIDADE = int(os.getenv("RENDA_MINIMA_ELEGIBILIDADE", "3000"))

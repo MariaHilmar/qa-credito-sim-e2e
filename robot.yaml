@@ -1,12 +1,11 @@
 # Configuração do Robot Framework (RF 6+)
-# Uso: robot --config robot.yaml tests/
+# Uso: robot --config robot.yaml e2e/tests/
 
 paths:
-  - tests
+  - e2e/tests
 
 pythonpath:
-  - libraries
-  - variables
+  - e2e/variables
 
 outputdir: results
 loglevel: INFO
