@@ -16,7 +16,7 @@ variables:
   BROWSER: chrome
   HEADLESS: "true"
   TEST_TIMEOUT: "15"
-  SIMULACAO_CREDITO_URL: "http://127.0.0.1:8765/mock/simulacao_credito.html"
+  SIMULACAO_CREDITO_URL: "http://127.0.0.1:8765/simulacao_credito.html"
 
 .robot-base:
   stage: test
@@ -34,10 +34,10 @@ test:e2e:
   before_script:
     - apt-get update -qq && apt-get install -y -qq chromium chromium-driver curl
     - pip install --cache-dir .cache/pip -r requirements.txt
-    - python -m http.server 8765 --directory data --bind 127.0.0.1 &
+    - python -m http.server 8765 --directory app --bind 127.0.0.1 &
     - |
       for i in $(seq 1 20); do
-        curl -sf "http://127.0.0.1:8765/mock/simulacao_credito.html" >/dev/null && break
+        curl -sf "http://127.0.0.1:8765/simulacao_credito.html" >/dev/null && break
         sleep 0.5
       done
   variables:
@@ -47,12 +47,11 @@ test:e2e:
     - mkdir -p results
     - >
       robot
-      --pythonpath libraries
-      --pythonpath variables
+      --pythonpath e2e/variables
       --outputdir results
-      --xunit results/junit.xml
+      --xunit junit.xml
       --include financiamento
-      tests/financiamento/
+      e2e/tests/financiamento/
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

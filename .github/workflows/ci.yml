@@ -30,14 +30,14 @@ jobs:
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v2
 
-      - name: Start mock HTTP server
+      - name: Start app HTTP server
         run: |
-          python -m http.server 8765 --directory data --bind 127.0.0.1 &
+          python -m http.server 8765 --directory app --bind 127.0.0.1 &
           for i in $(seq 1 20); do
-            curl -sf "http://127.0.0.1:8765/mock/simulacao_credito.html" >/dev/null && exit 0
+            curl -sf "http://127.0.0.1:8765/simulacao_credito.html" >/dev/null && exit 0
             sleep 0.5
           done
-          echo "Mock HTTP server failed to start" >&2
+          echo "App HTTP server failed to start" >&2
           exit 1
 
       - name: Run E2E tests
@@ -45,16 +45,15 @@ jobs:
           HEADLESS: "true"
           TEST_TIMEOUT: "15"
           BROWSER: chrome
-          SIMULACAO_CREDITO_URL: "http://127.0.0.1:8765/mock/simulacao_credito.html"
+          SIMULACAO_CREDITO_URL: "http://127.0.0.1:8765/simulacao_credito.html"
         run: |
           mkdir -p results
           robot \
-            --pythonpath libraries \
-            --pythonpath variables \
+            --pythonpath e2e/variables \
             --outputdir results \
-            --xunit results/junit.xml \
+            --xunit junit.xml \
             --include financiamento \
-            tests/financiamento/
+            e2e/tests/financiamento/
 
       - name: Upload reports
         if: always()

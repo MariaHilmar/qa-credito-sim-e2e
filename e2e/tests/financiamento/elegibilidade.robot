@@ -1,8 +1,8 @@
 *** Settings ***
 Documentation
 ...    Suíte BDD de elegibilidade para Simulação de Crédito.
-...    Um caso de teste por cenário (CT-FIN-*) com massa em data/test_data.json.
-Resource         ../../resources/pages/financiamento_page.robot
+...    Um caso de teste por cenário (CT-FIN-*) com massa em e2e/data/test_data.json.
+Resource         ../../resources/keywords/simulacao_credito_keywords.robot
 Variables        ../../data/test_data.json
 Variables        ../../variables/common_variables.py
 Suite Setup      Abrir Navegador    about:blank
@@ -58,7 +58,7 @@ Obter Caso Por Id
             RETURN    ${caso}
         END
     END
-    Fail    Caso de teste '${id}' nao encontrado em data/test_data.json
+    Fail    Caso de teste '${id}' nao encontrado em e2e/data/test_data.json
 
 Executar Cenario De Simulacao
     [Arguments]    ${id}

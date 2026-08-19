@@ -12,13 +12,12 @@ if [[ -f .env.local ]]; then
 fi
 
 TAGS="${1:-}"
-SUITE="${2:-tests/}"
+SUITE="${2:-e2e/tests/}"
 
 ROBOT_ARGS=(
-  --pythonpath libraries
-  --pythonpath variables
+  --pythonpath e2e/variables
   --outputdir results
-  --xunit results/junit.xml
+  --xunit junit.xml
 )
 
 if [[ -n "$TAGS" ]]; then
@@ -26,6 +25,8 @@ if [[ -n "$TAGS" ]]; then
 fi
 
 ROBOT_ARGS+=("$SUITE")
+
+mkdir -p results
 
 if [[ -x .venv/bin/robot ]]; then
   .venv/bin/robot "${ROBOT_ARGS[@]}"
